@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:layout_marginTop="25dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bienvenido"
+        android:textSize="25dp"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.106" />
+
+
+   <Button
+        android:layout_marginTop="25dp"
+        android:id="@+id/gestionarAdministrador"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginStart="50dp"
+        android:hint="Gestionar Administrador"
+        android:textColorHint="#fff"/>
+    <Button
+        android:layout_marginTop="25dp"
+        android:id="@+id/gestionarUsuario"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginStart="50dp"
+        android:hint="Gestionar Usuario"
+        android:textColorHint="#fff"/>
+    <Button
+        android:layout_marginTop="25dp"
+        android:id="@+id/gestionarMesa"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginStart="50dp"
+        android:hint="Gestionar Mesa"
+        android:textColorHint="#fff"/>
+    <Button
+        android:layout_marginTop="25dp"
+        android:id="@+id/gestionarProducto"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginStart="50dp"
+        android:hint="Gestionar Producto"
+        android:textColorHint="#fff"/>
+
+    <Button
+        android:layout_marginTop="25dp"
+        android:id="@+id/iniciarSesionUsuario"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginStart="50dp"
+        android:hint="iniciar Sesion como Usuario"
+        android:textColorHint="#fff"/>
+
+    <Button
+        android:layout_marginTop="25dp"
+        android:id="@+id/iniciarSesionAdministrador"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginStart="50dp"
+        android:hint="iniciar Sesion como Administrador"
+        android:textColorHint="#fff"/>
+    <Button
+        android:layout_marginTop="25dp"
+        android:id="@+id/agregarpedidos"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginStart="50dp"
+        android:hint="Hacer pedidos"
+        android:textColorHint="#fff"/>
+
+
+
+
+</LinearLayout>
