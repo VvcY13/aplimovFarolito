@@ -5,11 +5,12 @@
     android:layout_height="match_parent"
     tools:context=".MesafragmentComidas">
 
-
-    <ListView
-        android:layout_marginTop="50dp"
-        android:id="@+id/list_view_comidas"
+    <LinearLayout
+        android:id="@+id/linear_layout_comidas"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+    </LinearLayout>
 
 </FrameLayout>

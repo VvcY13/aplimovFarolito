@@ -2,33 +2,46 @@ package com.example.app_firebase;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+
+import android.graphics.drawable.Drawable;
+
 import android.os.Bundle;
+import com.bumptech.glide.Glide;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
+import android.widget.Button;
+import android.widget.LinearLayout;
+
+
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.app_firebase.Entidades.Producto;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MesafragmentComidas extends Fragment {
+    private LinearLayout linearLayoutComidas;
 
-    private ListView listView;
     private DatabaseReference ProductosRef;
     private List<Producto> listaDeComidas = new ArrayList<>();
+    private StorageReference storageReference;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -62,28 +75,61 @@ public class MesafragmentComidas extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mesacomidas, container, false);
+        linearLayoutComidas = view.findViewById(R.id.linear_layout_comidas);
+
         ProductosRef = FirebaseDatabase.getInstance().getReference().child("Producto");
         Log.d("MesafragmentComidas", "ProductosRef inicializado correctamente.");
 
-        listView = view.findViewById(R.id.list_view_comidas);
+
         ProductoAdapter productoAdapter = new ProductoAdapter(getActivity(), listaDeComidas);
-        listView.setAdapter(productoAdapter);
+
 
         ProductosRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 listaDeComidas.clear();
+                linearLayoutComidas.removeAllViews();
                 for (DataSnapshot Dsnapshot : snapshot.getChildren()) {
                     Producto producto = Dsnapshot.getValue(Producto.class);
                     if (producto != null && "Comidas".equals(producto.getTipoProducto())) {
+                        Button button = new Button(getActivity());
+                        int newWidth = 700;
+                        int newHeight = 300;
+                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(newWidth, newHeight);
+                        layoutParams.setMargins(10, 10, 10, 25);
+                        button.setLayoutParams(layoutParams);
+
+
+                        storageReference = FirebaseStorage.getInstance().getReference();
+                        // Obtener la URL de la imagen desde el producto
+                        String imageUrl = producto.getUrl();
+                        Log.e("URL", "es  " +imageUrl+"");
+
+                        Glide.with(getActivity())
+                                .load(imageUrl)
+                                .centerCrop()
+                                .into(new CustomTarget<Drawable>() {
+                                    @Override
+                                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                        button.setBackground(resource);
+                                    }
+
+                                    @Override
+                                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                                    }
+                                });
+
+                        linearLayoutComidas.addView(button);
+
                         listaDeComidas.add(producto);
-                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                        button.setOnClickListener(new View.OnClickListener() {
                             @Override
-                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                Producto producto = listaDeComidas.get(i);
+                            public void onClick(View view) {
                                 mostrarDetallesProducto(producto);
                             }
                         });
+
                     }
                 }
 
@@ -114,4 +160,6 @@ public class MesafragmentComidas extends Fragment {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
+
 }
