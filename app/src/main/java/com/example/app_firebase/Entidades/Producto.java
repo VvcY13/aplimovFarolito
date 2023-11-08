@@ -8,16 +8,19 @@ public class Producto {
     private String tipoProducto;
     private Boolean disponibilidadProducto;
 
+    private String Url;
+
     public Producto() {
     }
 
-    public Producto(int idProducto, String nombreProducto, Double precioProducto, String categoriaProducto, String tipoProducto, Boolean disponibilidadProducto) {
+    public Producto(int idProducto, String nombreProducto, Double precioProducto, String categoriaProducto, String tipoProducto, Boolean disponibilidadProducto,String url) {
         this.idProducto = idProducto;
         this.nombreProducto = nombreProducto;
         this.precioProducto = precioProducto;
         this.categoriaProducto = categoriaProducto;
         this.tipoProducto = tipoProducto;
         this.disponibilidadProducto = disponibilidadProducto;
+        this.Url = url;
     }
 
     public int getIdProducto() {
@@ -66,6 +69,14 @@ public class Producto {
 
     public void setDisponibilidadProducto(Boolean disponibilidadProducto) {
         this.disponibilidadProducto = disponibilidadProducto;
+    }
+
+    public String getUrl() {
+        return Url;
+    }
+
+    public void setUrl(String url) {
+        Url = url;
     }
 
     @Override

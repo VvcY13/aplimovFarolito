@@ -3,6 +3,8 @@ package com.example.app_firebase;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -10,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,13 +24,19 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class producto extends AppCompatActivity {
     private EditText idproducto,nombreproducto,precioproducto;
-    private CheckBox productodisponibilidad;
-    private Button registrarProducto;
+   private Button registrarProducto;
     private Spinner categoriaproducto;
     private Spinner tipoproducto;
+    private Uri imagenUri;
+
+     private Button seleccionarImagen;
+    private static final int PICK_IMAGE_REQUEST = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +47,20 @@ public class producto extends AppCompatActivity {
         precioproducto = findViewById(R.id.txtprecio);
         categoriaproducto = findViewById(R.id.txtcategoria);
         tipoproducto = findViewById(R.id.txttipo);
-        productodisponibilidad = findViewById(R.id.productoDisponible);
         registrarProducto = findViewById(R.id.registrarProducto);
+
+
+        Button seleccionarImagen = findViewById(R.id.seleccionarImagen);
+
+        seleccionarImagen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                startActivityForResult(intent, PICK_IMAGE_REQUEST);
+            }
+        });
+
 
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.Categorias, android.R.layout.simple_spinner_item);
@@ -75,11 +96,18 @@ public class producto extends AppCompatActivity {
                 Toast.makeText(producto.this, "No se ha seleccionado Tipo", Toast.LENGTH_SHORT).show();
             }
         });
-
-
-
         btnRegistrarProducto();
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            this.imagenUri = data.getData();
+            Toast.makeText(this, "Imagen cargada", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public void btnRegistrarProducto(){
         registrarProducto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,62 +118,74 @@ public class producto extends AppCompatActivity {
                     Toast.makeText(producto.this, "Llenar el campo Nombre de Producto", Toast.LENGTH_SHORT).show();
                 } else if (precioproducto.getText().toString().trim().isEmpty()) {
                     Toast.makeText(producto.this, "Llenar el campo Precio del Producto", Toast.LENGTH_SHORT).show();
-               } else{
-                     int IdProducto = Integer.parseInt(idproducto.getText().toString());
-                     String nomProducto = nombreproducto.getText().toString();
-                     Double precproducto = Double.parseDouble(precioproducto.getText().toString());
-                     String cateproducto = categoriaproducto.getSelectedItem().toString();
-                     String tipproducto = tipoproducto.getSelectedItem().toString();
-                     Boolean productdisponibilidad;
-                     if (productodisponibilidad.isChecked()){
-                         productdisponibilidad = true;
-                     }else {
-                         productdisponibilidad = false;
-                     }
-                    FirebaseDatabase db = FirebaseDatabase.getInstance();
-                    DatabaseReference dbref = db.getReference(Producto.class.getSimpleName());
+                } else if (imagenUri == null) {
+                    Toast.makeText(producto.this, "Seleccionar una imagen", Toast.LENGTH_SHORT).show();
+                } else {
+                    int IdProducto = Integer.parseInt(idproducto.getText().toString());
+                    String nomProducto = nombreproducto.getText().toString();
+                    Double precproducto = Double.parseDouble(precioproducto.getText().toString());
+                    String cateproducto = categoriaproducto.getSelectedItem().toString();
+                    String tipproducto = tipoproducto.getSelectedItem().toString();
 
-                    dbref.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            boolean idRepetido = false;
-                            boolean nombreRepetido = false;
-                            String aux = Integer.toString(IdProducto);
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    StorageReference storageRef = storage.getReference();
+                    StorageReference imagenRef = storageRef.child("imagenes/" + imagenUri.getLastPathSegment());
 
-                            for (DataSnapshot productox : snapshot.getChildren()){
-                                if(productox.child("idProducto").getValue().toString().equalsIgnoreCase(aux)){
-                                    idRepetido = true;
-                                    Toast.makeText(producto.this, "Error, El id " +aux+ " ya existe", Toast.LENGTH_SHORT).show();
-                                    break;
-                                }
+                    imagenRef.putFile(imagenUri)
+                            .addOnSuccessListener(taskSnapshot -> {
+                                imagenRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                    String urlImagen = uri.toString();
 
-                                if(productox.child("nombreProducto").getValue().toString().equals(nomProducto)){
-                                    nombreRepetido = true;
-                                    Toast.makeText(producto.this, "Error, El nombre " +nomProducto+ " ya existe", Toast.LENGTH_SHORT).show();
-                                    break;
-                                }
-                            }
-                            if (!idRepetido && !nombreRepetido){
-                                Producto producto = new Producto();
-                                producto.setIdProducto(IdProducto);
-                                producto.setNombreProducto(nomProducto);
-                                producto.setPrecioProducto(precproducto);
-                                producto.setCategoriaProducto(cateproducto);
-                                producto.setTipoProducto(tipproducto);
-                                producto.setDisponibilidadProducto(productdisponibilidad);
-                                dbref.push().setValue(producto);
-                                Toast.makeText(producto.this, "Producto Registrado", Toast.LENGTH_SHORT).show();
-                                idproducto.setText("");
-                                nombreproducto.setText("");
-                                precioproducto.setText("");
-                            }
-                        }
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Toast.makeText(producto.this, "Error en la carga de Datos del Producto", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                                    FirebaseDatabase db = FirebaseDatabase.getInstance();
+                                    DatabaseReference dbref = db.getReference(Producto.class.getSimpleName());
 
+                                    dbref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            boolean idRepetido = false;
+                                            boolean nombreRepetido = false;
+                                            String aux = Integer.toString(IdProducto);
+
+                                            for (DataSnapshot productox : snapshot.getChildren()){
+                                                if(productox.child("idProducto").getValue().toString().equalsIgnoreCase(aux)){
+                                                    idRepetido = true;
+                                                    Toast.makeText(producto.this, "Error, El id " +aux+ " ya existe", Toast.LENGTH_SHORT).show();
+                                                    break;
+                                                }
+
+                                                if(productox.child("nombreProducto").getValue().toString().equals(nomProducto)){
+                                                    nombreRepetido = true;
+                                                    Toast.makeText(producto.this, "Error, El nombre " +nomProducto+ " ya existe", Toast.LENGTH_SHORT).show();
+                                                    break;
+                                                }
+                                            }
+                                            if (!idRepetido && !nombreRepetido){
+                                                Producto producto = new Producto();
+                                                producto.setIdProducto(IdProducto);
+                                                producto.setNombreProducto(nomProducto);
+                                                producto.setPrecioProducto(precproducto);
+                                                producto.setCategoriaProducto(cateproducto);
+                                                producto.setTipoProducto(tipproducto);
+                                                producto.setDisponibilidadProducto(true);
+                                                producto.setUrl(urlImagen); // Agregar la URL de la imagen al producto
+                                                dbref.push().setValue(producto);
+                                                Toast.makeText(producto.this, "Producto Registrado", Toast.LENGTH_SHORT).show();
+                                                idproducto.setText("");
+                                                nombreproducto.setText("");
+                                                precioproducto.setText("");
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            Toast.makeText(producto.this, "Error en la carga de Datos del Producto", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                });
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(producto.this, "Error al subir la imagen", Toast.LENGTH_SHORT).show();
+                            });
                 }
             }
         });
