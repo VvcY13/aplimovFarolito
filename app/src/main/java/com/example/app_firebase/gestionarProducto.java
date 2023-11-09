@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -22,12 +23,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+
 import java.util.ArrayList;
 
 public class gestionarProducto extends AppCompatActivity {
     private Button agregarproducto,modificarproducto,borrarproducto,buscarProducto;
     private EditText idproductobuscado, productoencontrado;
     private ListView listaproductos;
+
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,8 @@ public class gestionarProducto extends AppCompatActivity {
         buscarProducto = findViewById(R.id.buscaproductoid);
         idproductobuscado = findViewById(R.id.txtingresaproductoId);
         productoencontrado = findViewById(R.id.txtproductoencontrado);
+
+        context = this;
 
         listarProductos();
         BuscarProducto();
@@ -57,7 +63,7 @@ public class gestionarProducto extends AppCompatActivity {
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         DatabaseReference dbref = db.getReference(Producto.class.getSimpleName());
         ArrayList<Producto> listaproducto = new ArrayList<Producto>();
-        ArrayAdapter<Producto> adapterproducto = new ArrayAdapter<Producto>(getApplicationContext(), android.R.layout.simple_list_item_1,listaproducto);
+        ArrayAdapter<Producto> adapterproducto = new ArrayAdapter<Producto>(context, android.R.layout.simple_list_item_1,listaproducto);
         listaproductos.setAdapter(adapterproducto);
 
         dbref.addChildEventListener(new ChildEventListener() {
@@ -132,7 +138,7 @@ public class gestionarProducto extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (idproductobuscado.getText().toString().trim().isEmpty()) {
-                    Toast.makeText(gestionarProducto.this, "Ingresar el Id a Buscar", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(gestionarProducto.this, "Ingresar el Id a Borrar", Toast.LENGTH_SHORT).show();
                 } else {
                     int id = Integer.parseInt(idproductobuscado.getText().toString());
                     FirebaseDatabase db = FirebaseDatabase.getInstance();
@@ -147,7 +153,10 @@ public class gestionarProducto extends AppCompatActivity {
                                 if (auxiliar.equalsIgnoreCase(productox.child("idProducto").getValue().toString())) {
                                     respuesta = true;
                                     productox.getRef().removeValue();
+                                    idproductobuscado.setText("");
+                                    productoencontrado.setText("");
                                     listarProductos();
+
                                     break;
                                 }
                             }

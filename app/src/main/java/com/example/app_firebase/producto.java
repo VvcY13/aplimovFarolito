@@ -34,7 +34,7 @@ public class producto extends AppCompatActivity {
     private Spinner tipoproducto;
     private Uri imagenUri;
 
-     private Button seleccionarImagen;
+
     private static final int PICK_IMAGE_REQUEST = 1;
 
 

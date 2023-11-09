@@ -174,6 +174,8 @@ public class gestionarAdministrador extends AppCompatActivity {
                                 if(auxiliar.equalsIgnoreCase(adminx.child("id").getValue().toString())){
                                     respuesta = true;
                                     adminx.getRef().removeValue();
+                                    idadmin.setText("");
+                                    getuseradmin.setText("");
                                     ListarAdministradores();
                                     break;
                                 }

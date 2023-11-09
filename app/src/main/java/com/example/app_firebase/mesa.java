@@ -21,7 +21,6 @@ import com.google.firebase.database.ValueEventListener;
 
 public class mesa extends AppCompatActivity {
     private EditText idmesa,ubicacionmesa,capacidadmesa;
-    private CheckBox disponibilidadmesa;
 
     private Button registrarMesa;
 
@@ -32,7 +31,7 @@ public class mesa extends AppCompatActivity {
         idmesa = findViewById(R.id.txtmesaid);
         ubicacionmesa = findViewById(R.id.txtubicacion);
         capacidadmesa = findViewById(R.id.txtcapacidad);
-        disponibilidadmesa = findViewById(R.id.verdadero);
+
         registrarMesa = findViewById(R.id.registrarMesa);
 
         btnRegistrarMesa();
@@ -52,12 +51,8 @@ public class mesa extends AppCompatActivity {
                     int IDmesa = Integer.parseInt(idmesa.getText().toString());
                     String ubimesa = ubicacionmesa.getText().toString();
                     int capacimesa = Integer.parseInt(capacidadmesa.getText().toString());
-                    boolean marcado;
-                    if (disponibilidadmesa.isChecked()){
-                        marcado = true;
-                    }else {
-                        marcado = false;
-                    }
+
+
                     FirebaseDatabase db = FirebaseDatabase.getInstance();
                     DatabaseReference dbref = db.getReference(Mesa.class.getSimpleName());
 
@@ -78,7 +73,7 @@ public class mesa extends AppCompatActivity {
                                 mesa.setIdMesa(IDmesa);
                                 mesa.setUbicacionMesa(ubimesa);
                                 mesa.setCapacidadMesa(capacimesa);
-                                mesa.setDisponibilidadMesa(marcado);
+                                mesa.setDisponibilidadMesa(true);
                                 dbref.push().setValue(mesa);
                                 Toast.makeText(mesa.this, "Mesa Registrada", Toast.LENGTH_SHORT).show();
                                 idmesa.setText("");

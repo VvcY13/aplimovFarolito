@@ -167,6 +167,8 @@ public class gestionarUsuario extends AppCompatActivity {
                                 if(aux.equalsIgnoreCase(x.child("idUsuario").getValue().toString())){
                                     res = true;
                                     x.getRef().removeValue();
+                                    txtbuscarid.setText("");
+                                    txtusuarioencontrado.setText("");
                                     listarUsuario();
                                     break;
                                 }

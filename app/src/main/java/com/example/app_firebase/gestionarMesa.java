@@ -153,6 +153,8 @@ public class gestionarMesa extends AppCompatActivity {
                                 if(auxiliar.equalsIgnoreCase(mesax.child("idMesa").getValue().toString())){
                                     respuesta = true;
                                     mesax.getRef().removeValue();
+                                    idmesa.setText("");
+                                    getubicacionmesa.setText("");
                                     listarMesa();
 
                                     break;
