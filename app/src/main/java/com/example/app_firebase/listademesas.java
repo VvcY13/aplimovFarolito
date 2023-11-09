@@ -27,6 +27,8 @@ public class listademesas extends AppCompatActivity {
     private LinearLayout contenedorMesas;
     ArrayList<Button> mesasList = new ArrayList<>();
 
+    private int idmesaseleccionada;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +51,8 @@ public class listademesas extends AppCompatActivity {
                 mesaButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        idmesaseleccionada = idMesa;
+                        System.out.println(idmesaseleccionada);
                         Intent ventanadentrodemesa = new Intent(getApplicationContext(),dentrodemesa.class);
                         startActivity(ventanadentrodemesa);
                     }

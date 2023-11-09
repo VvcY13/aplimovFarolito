@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,6 +22,8 @@ public class inicioUsuario extends AppCompatActivity {
     private Button btnloginusuario;
     private EditText txtloginUsuario;
     private EditText txtcontraseñaUsuario;
+
+    private int usuarioID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +55,8 @@ public class inicioUsuario extends AppCompatActivity {
                                     Usuario user = Snapshot.getValue(Usuario.class);
                                     if(user.getContraseñaUsuario().equals(contraseñatxt)){
                                         Toast.makeText(inicioUsuario.this, "Inicio exitoso", Toast.LENGTH_SHORT).show();
+                                        usuarioID = user.getIdUsuario();
+                                        System.out.println(usuarioID);
                                         return;
                                     }
                                 }

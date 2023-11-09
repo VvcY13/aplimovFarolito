@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 
 import com.bumptech.glide.request.target.CustomTarget;
@@ -128,6 +129,7 @@ public class MesafragmentComidas extends Fragment {
                             public void onClick(View view) {
                                 mostrarDetallesProducto(producto);
                             }
+
                         });
 
                     }
@@ -149,11 +151,17 @@ public class MesafragmentComidas extends Fragment {
         builder.setTitle("Detalles del Producto");
 
         builder.setMessage("Nombre: " + producto.getNombreProducto() + "\nPrecio: S/" + producto.getPrecioProducto());
-
-        builder.setPositiveButton("Cerrar", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("Cerrar", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Toast.makeText(getContext(), "Cerrando alerta", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Toast.makeText(getContext(), "Agregar a Comanda", Toast.LENGTH_SHORT).show();
+                System.out.println(producto.getIdProducto());
             }
         });
 
