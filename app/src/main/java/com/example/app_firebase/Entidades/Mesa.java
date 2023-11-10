@@ -50,6 +50,7 @@ public class Mesa {
 
     @Override
     public String toString() {
-        return  idMesa + " " + ubicacionMesa + " " + capacidadMesa + " Personas " + disponibilidadMesa ;
+        String disponibilidadTexto = disponibilidadMesa ? "Disponible" : "No disponible";
+        return  idMesa + " " + ubicacionMesa + " " + capacidadMesa + " Personas " + disponibilidadTexto ;
     }
 }

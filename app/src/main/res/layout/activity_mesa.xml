@@ -41,14 +41,16 @@
         android:textAlignment="center"
         android:textSize="20dp"/>
 
-    <EditText
-        android:id="@+id/txtubicacion"
+    <Spinner
+        android:id="@+id/seleccioneUbicacion"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:hint="nombres"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginStart="100dp"
         android:textAlignment="center"
-        android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"/>
+        />
+
     <TextView
         android:layout_marginTop="25dp"
         android:layout_width="match_parent"
@@ -66,7 +68,6 @@
         android:textAlignment="center"
         android:layout_marginStart="50dp"
         android:layout_marginEnd="50dp"/>
-
 
 
 
