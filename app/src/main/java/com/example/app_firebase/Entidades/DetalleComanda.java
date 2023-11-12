@@ -1,6 +1,7 @@
 package com.example.app_firebase.Entidades;
 
 public class DetalleComanda {
+    private String nombreProducto;
     private int idProducto;
     private int cantidad;
     private double subtotal;
@@ -10,11 +11,20 @@ public class DetalleComanda {
     public DetalleComanda() {
     }
 
-    public DetalleComanda(int idProducto, int cantidad,String comentario, double subtotal) {
+    public DetalleComanda(int idProducto,String nombreProducto, int cantidad,String comentario, double subtotal) {
         this.idProducto = idProducto;
+        this.nombreProducto = nombreProducto;
         this.cantidad = cantidad;
         this.comentario = comentario;
         this.subtotal = subtotal;
+    }
+
+    public String getNombreProducto() {
+        return nombreProducto;
+    }
+
+    public void setNombreProducto(String nombreProducto) {
+        this.nombreProducto = nombreProducto;
     }
 
     public int getIdProducto() {
@@ -53,6 +63,7 @@ public class DetalleComanda {
     public String toString() {
         return "DetalleComanda{" +
                 "idProducto=" + idProducto +
+                "nombre=" + nombreProducto +
                 ", cantidad=" + cantidad +
                 ", comentario=" + comentario +
                 ", subtotal=" + subtotal +

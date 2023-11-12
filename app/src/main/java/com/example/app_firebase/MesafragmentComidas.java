@@ -18,12 +18,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.example.app_firebase.Entidades.Comanda;
+import com.example.app_firebase.Entidades.DetalleComanda;
 import com.example.app_firebase.Entidades.Producto;
 
 import com.google.firebase.database.DataSnapshot;
@@ -33,22 +37,20 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.example.app_firebase.Interface.productoSeleccionadoListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MesafragmentComidas extends Fragment {
-    private LinearLayout linearLayoutComidas;
+public class MesafragmentComidas extends Fragment implements  productoSeleccionadoListener{
 
+
+    private LinearLayout linearLayoutComidas;
     private DatabaseReference ProductosRef;
     private List<Producto> listaDeComidas = new ArrayList<>();
+    private List<DetalleComanda> listaProductosSeleccionados = new ArrayList<>();
+
     private StorageReference storageReference;
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-
-    private String mParam1;
-    private String mParam2;
 
     public MesafragmentComidas() {
 
@@ -57,8 +59,7 @@ public class MesafragmentComidas extends Fragment {
     public static MesafragmentComidas newInstance(String param1, String param2) {
         MesafragmentComidas fragment = new MesafragmentComidas();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -67,20 +68,17 @@ public class MesafragmentComidas extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+
 
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mesacomidas, container, false);
         linearLayoutComidas = view.findViewById(R.id.linear_layout_comidas);
 
         ProductosRef = FirebaseDatabase.getInstance().getReference().child("Producto");
-        Log.d("MesafragmentComidas", "ProductosRef inicializado correctamente.");
-
 
         ProductoAdapter productoAdapter = new ProductoAdapter(getActivity(), listaDeComidas);
 
@@ -102,9 +100,8 @@ public class MesafragmentComidas extends Fragment {
 
 
                         storageReference = FirebaseStorage.getInstance().getReference();
-                        // Obtener la URL de la imagen desde el producto
                         String imageUrl = producto.getUrl();
-                        Log.e("URL", "es  " +imageUrl+"");
+                        Log.e("URL", "es  " + imageUrl + "");
 
                         Glide.with(getActivity())
                                 .load(imageUrl)
@@ -145,23 +142,57 @@ public class MesafragmentComidas extends Fragment {
         });
 
         return view;
-}
+    }
+
     private void mostrarDetallesProducto(Producto producto) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Detalles del Producto");
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_detalles_producto, null);
+        builder.setView(dialogView);
 
-        builder.setMessage("Nombre: " + producto.getNombreProducto() + "\nPrecio: S/" + producto.getPrecioProducto());
+        TextView nombreProductoTextView = dialogView.findViewById(R.id.nombreProductoTextView);
+        TextView precioProductoTextView = dialogView.findViewById(R.id.precioProductoTextView);
+        EditText cantidadEditText = dialogView.findViewById(R.id.cantidadEditText);
+        EditText comentarioEditText = dialogView.findViewById(R.id.comentarioEditText);
+
+
+        nombreProductoTextView.setText(producto.getNombreProducto());
+        precioProductoTextView.setText("Precio: S/" + producto.getPrecioProducto());
+
         builder.setNegativeButton("Cerrar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 Toast.makeText(getContext(), "Cerrando alerta", Toast.LENGTH_SHORT).show();
             }
         });
+
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Toast.makeText(getContext(), "Agregar a Comanda", Toast.LENGTH_SHORT).show();
-                System.out.println(producto.getIdProducto());
+                int cantidad = Integer.parseInt(cantidadEditText.getText().toString());
+                String comentario = comentarioEditText.getText().toString();
+
+                if(comentario.isEmpty()){
+                    comentario=null;
+                }
+
+                DetalleComanda detalleComanda = new DetalleComanda(producto.getIdProducto(), producto.getNombreProducto(), cantidad,comentario,producto.getPrecioProducto()*cantidad);
+                Comanda comanda = Comanda.getInstance();
+                comanda.getDetalle().add(detalleComanda);
+                comanda.setTotal(comanda.getTotal() + detalleComanda.getSubtotal());
+
+                Toast.makeText(getContext(), "Agregado a Comanda", Toast.LENGTH_SHORT).show();
+
+                if (getActivity() instanceof productoSeleccionadoListener) {
+                    ((productoSeleccionadoListener) getActivity()).productoSeleccionado(detalleComanda);
+                }
+
+                Log.d("DetallesProducto", "Producto agregado a la comanda:\n" +
+                        "ID: " + producto.getIdProducto() + "\n" +
+                        "Nombre: " + producto.getNombreProducto() + "\n" +
+                        "Precio: S/" + producto.getPrecioProducto() + "\n" +
+                        "Cantidad: " + cantidad + "\n" +
+                        "Comentario: " + comentario);
             }
         });
 
@@ -169,5 +200,27 @@ public class MesafragmentComidas extends Fragment {
         dialog.show();
     }
 
+    @Override
+    public void productoSeleccionado(DetalleComanda detalleComanda) {
+        listaProductosSeleccionados.add(detalleComanda);
 
+        Log.d("MesafragmentComidas", "Producto seleccionado: " + detalleComanda.toString());
+
+        actualizarListaProductos(listaProductosSeleccionados);
+
+        Log.d("MesafragmentComidas", "Lista de productos actualizada");
+        if (getActivity() instanceof productoSeleccionadoListener) {
+            ((productoSeleccionadoListener) getActivity()).productoSeleccionado(detalleComanda);
+        }
+    }
+    public void actualizarListaProductos(List<DetalleComanda> nuevaListaProductos) {
+
+
+        for (DetalleComanda detalleComanda : nuevaListaProductos) {
+            Log.d("MesafragmentComidas", "Producto: " + detalleComanda.toString());
+        }
+    }
 }
+
+
+

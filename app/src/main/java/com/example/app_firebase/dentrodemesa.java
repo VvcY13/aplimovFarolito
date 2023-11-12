@@ -10,21 +10,23 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
+import com.example.app_firebase.Entidades.DetalleComanda;
 import com.example.app_firebase.Entidades.Producto;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.example.app_firebase.Interface.productoSeleccionadoListener;
 
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class dentrodemesa extends AppCompatActivity {
+public class dentrodemesa extends AppCompatActivity implements productoSeleccionadoListener {
     private MesafragmentComidas comidas;
-    private  MesafragmentBebidas bebidas;
+    private MesafragmentBebidas bebidas;
     private MesafragmentComanda comanda;
 
 
@@ -36,19 +38,29 @@ public class dentrodemesa extends AppCompatActivity {
         comidas = new MesafragmentComidas();
         bebidas = new MesafragmentBebidas();
         comanda = new MesafragmentComanda();
+
+
         getSupportFragmentManager().beginTransaction().add(R.id.contenedorFragments, comidas).commit();
     }
 
-    public void onClick(View view){
+    public void onClick(View view) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-        if(view.getId()==R.id.btnComida){
-            transaction.replace(R.id.contenedorFragments,comidas);
-        } else if (view.getId()==R.id.btnBebidas) {
-            transaction.replace(R.id.contenedorFragments,bebidas);
-        } else if (view.getId()==R.id.btnComanda) {
-            transaction.replace(R.id.contenedorFragments,comanda);
+        if (view.getId() == R.id.btnComida) {
+            transaction.replace(R.id.contenedorFragments, comidas);
+        } else if (view.getId() == R.id.btnBebidas) {
+            transaction.replace(R.id.contenedorFragments, bebidas);
+        } else if (view.getId() == R.id.btnComanda) {
+            transaction.replace(R.id.contenedorFragments, comanda);
         }
         transaction.commit();
     }
+
+    @Override
+    public void productoSeleccionado(DetalleComanda detalleComanda) {
+        if (comanda != null) {
+            comanda.productoSeleccionado(detalleComanda);
+        }
+    }
+
 }
