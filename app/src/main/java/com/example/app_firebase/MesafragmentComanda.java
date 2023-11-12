@@ -1,5 +1,7 @@
 package com.example.app_firebase;
 
+import static android.content.ContentValues.TAG;
+
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -14,13 +16,14 @@ import android.widget.ListView;
 
 import com.example.app_firebase.Entidades.DetalleComanda;
 import com.example.app_firebase.Entidades.Producto;
+import com.example.app_firebase.Interface.DetalleComandaAdapterCallback;
 import com.example.app_firebase.Interface.productoSeleccionadoListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class MesafragmentComanda extends Fragment implements productoSeleccionadoListener {
+public class MesafragmentComanda extends Fragment implements productoSeleccionadoListener, DetalleComandaAdapterCallback {
 
 
     private List<DetalleComanda> listaProductosSeleccionados = new ArrayList<>();
@@ -86,5 +89,10 @@ public class MesafragmentComanda extends Fragment implements productoSeleccionad
         for (DetalleComanda detalleComanda : listaProductosSeleccionados) {
             Log.d("MesafragmentComanda", detalleComanda.toString());
         }
+    }
+
+    @Override
+    public void onNombreProductoObtenido(String nombreProducto) {
+        Log.d(TAG, "Nombre del producto obtenido: " + nombreProducto);
     }
 }

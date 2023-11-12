@@ -169,11 +169,17 @@ public class MesafragmentComidas extends Fragment implements  productoSelecciona
         builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                int cantidad = Integer.parseInt(cantidadEditText.getText().toString());
+                String cantidadString = cantidadEditText.getText().toString();
+                int cantidad;
                 String comentario = comentarioEditText.getText().toString();
 
                 if(comentario.isEmpty()){
                     comentario=null;
+                }
+                if (!cantidadString.isEmpty()) {
+                    cantidad = Integer.parseInt(cantidadString);
+                } else {
+                   cantidad=1;
                 }
 
                 DetalleComanda detalleComanda = new DetalleComanda(producto.getIdProducto(), producto.getNombreProducto(), cantidad,comentario,producto.getPrecioProducto()*cantidad);
